@@ -7,9 +7,9 @@ from discord.ext import commands
 from Bot_DB.Azure.Load_Azure import test_dict
 
 
-class Fun:
+class FunCog(commands.Cog, name="Fun stuff"):
 
-    def __init__(self, client, db_connection):
+    def __init__(self, client):
         self.client = client
 
     async def member_pic(self, ctx, member_name, group_name):
@@ -102,3 +102,7 @@ class Fun:
         tmp.set_image(url='https://thumbs.gfycat.com/AgileHardtofindBug-small.gif')
         tmp.set_footer(text='Powered by Memes')
         await ctx.send(embed=tmp)
+
+def setup(bot):
+    bot.add_cog(FunCog(bot))
+

@@ -3,12 +3,14 @@ import math
 from random import randint
 
 import discord
+from discord.ext import commands
 import mongoengine
 
-from Bot_DB.Mango.database_models import Users
+from Bot_DB.Azure.Load_Azure import load_azure
+from Mango.database_models import Users
 
 
-class MiscEvents:
+class MiscEvents(commands.Cog):
 
     def __init__(self, client, database):
         self.client = client
@@ -19,8 +21,7 @@ class MiscEvents:
               + str(len(self.client.guilds)) + ' servers | Connected to ' + str(len(set(self.client.get_all_members())))
               + ' users')
 
-        print('\nLoading Azure:')
-        # await load_azure()
+
 
 
         print('\nLoading user DB...', end='')
@@ -79,5 +80,5 @@ class MiscEvents:
             except mongoengine.errors.NotUniqueError:
                 pass
             except Exception as error:
-
                 print('\n Something happened while adding EXP to user: ' + str(error))
+

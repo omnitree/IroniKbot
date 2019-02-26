@@ -11,7 +11,7 @@ test_dict = {}
 groups = []
 
 
-async def load_azure():
+def load_azure():
     block_blob_service = BlockBlobService(account_name=azure_account_name,
                                           account_key=azure_account_key)
 
@@ -33,7 +33,7 @@ async def load_azure():
 
     # Fill the picture count for each member
     for group in groups:
-        print("     " + group + "...", end='')
+        print("     " + group + "...")
         for member in test_dict[group]:
             generator = block_blob_service.list_blobs(group, prefix=member)
             count = 0
@@ -42,10 +42,10 @@ async def load_azure():
                 count += 1
 
             test_dict[group][member] = count
-        print("done\n")
+        print("     done\n")
 
     # Print the dict out to the console
     pprint.pprint(test_dict)
 
     print("done loading azure")
-    await asyncio.sleep(1)
+    asyncio.sleep(1)

@@ -1,12 +1,14 @@
-FROM python:3.6-alpine
+FROM python:3.6
 
-COPY . /IronicBot
-WORKDIR /IronicBot
+WORKDIR /app
 
-RUN pip install --trusted-host pypi.python.org -r requirements.txt
+RUN apt-get update
+RUN apt-get install -y git
+RUN pip install --upgrade setuptools
 
-EXPOSE 80
+COPY requirements.txt ./
+RUN pip install -r requirements.txt
 
-ENV NAME Ironic_Bot
+COPY . .
 
-CMD ["python", "./Bot_Main.py"]
+CMD ["python", "Bot_Main.py"]

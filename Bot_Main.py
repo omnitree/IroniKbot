@@ -1,12 +1,16 @@
-import asyncio
+import logging
 import os
 
 import mongoengine
-from discord.ext.commands import Bot
 
-from Bot_Commands.Fun import Fun
-from Bot_Commands.Misc import Misc
+import discord
+from discord.ext import commands
+
+from Bot_DB.Azure.Load_Azure import load_azure
 from Bot_Events.Misc_Events import MiscEvents
+
+from Mango.database_models import Users
+
 
 bot_token = os.environ.get('BOT_TOKEN')
 
@@ -26,22 +30,37 @@ def connect():
                         host=db_host)
 
     return mongoengine.connection
+bot = commands.Bot(description="Ironic Bot by Perfect_Irony#5196", command_prefix="$", pm_help=False)
 
-# Run the client using the built-in client.run
+# Run the client using the built-in client.run. Clear restart is redundant, but keeping it just in case.
 def run_client(*args, **kwargs):
 
     while True:
-        client = Bot(description="Ironic Bot by Perfect_Irony#5196", command_prefix="$", pm_help=False)
+
 
         mongo_connection = connect()
+        print('\nLoading Azure:')
+        load_azure()
 
-        client.add_cog(Fun(client, mongo_connection))
-        client.add_cog(Misc(client, mongo_connection))
-        client.add_cog(MiscEvents(client, mongo_connection))
+        logging.basicConfig(level=logging.INFO)
 
-        client.run(bot_token)
+        initial_extensions = ['Bot_Commands.Fun',
+                              'Bot_Commands.Misc',
+                              'Bot_Commands.Moderation']
 
-        asyncio.sleep(250)
+        for extension in initial_extensions:
+            try:
+                bot.load_extension(extension)
+            except Exception as e:
+                print(f'Failed to load extension {extension}. error: ' + str(e.with_traceback()))
+
+        bot.add_cog(MiscEvents(bot,mongo_connection))
+
+        try:
+            bot.run(bot_token)
+        finally:
+            bot.clear()
+            print('restarting')
 
 
 run_client()
